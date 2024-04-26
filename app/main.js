@@ -1,7 +1,6 @@
 const net = require("net");
 
-// You can use print statements as follows for debugging, they'll be visible when running tests.
-console.log("Logs from your program will appear here!");
+console.log("Your Server Started!");
 
 // Uncomment this to pass the first stage
 const server = net.createServer((socket) => {
@@ -13,6 +12,12 @@ const server = net.createServer((socket) => {
 
     if (path === "/") {
       socket.write("HTTP/1.1 200 OK\r\n\r\nHello, World!");
+    } else if (path.startsWith("/echo")) {
+      const message = path.split("/echo/")[1];
+      console.log("🚀 ~ socket.on ~ message:", message);
+      socket.write(
+        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${message.length}\r\n\r\n${message}`
+      );
     } else {
       socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
     }
