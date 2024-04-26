@@ -1,10 +1,12 @@
 [![progress-banner](https://backend.codecrafters.io/progress/http-server/2856b560-38f7-4338-afad-b0dac7ad7fe9)](https://app.codecrafters.io/users/RomaLetodiani?r=2qF)
 
-# Build Your Own HTTP Server Challenge
+["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
 
-Welcome to the journey of mastering HTTP with CodeCrafters! 🚀
+Welcome to the journey of mastering [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) with CodeCrafters! 🚀
 
-HTTP, the backbone of the web, awaits your mastery. In this challenge, you'll embark on a quest to build a robust HTTP/1.1 server capable of handling multiple clients simultaneously.
+Along the way you'll learn about TCP servers,
+[HTTP request syntax](https://www.w3.org/Protocols/rfc2616/rfc2616-sec5.html),
+[HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol), the backbone of the web, awaits your mastery. In this challenge, you'll embark on a quest to build a robust HTTP/1.1 server capable of handling multiple clients simultaneously.
 
 ### What to Expect
 
@@ -34,3 +36,6 @@ For stages 2 and beyond:
 3. **Submission**: Commit your changes and push them to your CodeCrafters repository using `git push origin master`. Test output will be streamed to your terminal.
 
 Dive in, embrace the challenge, and emerge as a master of HTTP!
+
+**Note**: If you're viewing this repo on GitHub, head over to
+[codecrafters.io](https://codecrafters.io) to try the challenge.
