@@ -18,8 +18,6 @@ callback function is executed. Here's a breakdown of what the code inside this b
     // console.log("🚀 ~ socket.on ~ request:", request);
     const path = request.split(" ")[1]; // Extract the path from the request
     // console.log("🚀 ~ socket.on ~ path:", path);
-    const userAgent = request.split("User-Agent: ")[1].split("\r\n")[0];
-    // console.log("🚀 ~ socket.on ~ userAgent:", userAgent);
 
     /* This `if` statement is checking if the requested path is the root path ("/"). If the path is
     "/", the server responds with an HTTP status of 200 OK and sends the message "Hello, World!"
@@ -36,7 +34,9 @@ callback function is executed. Here's a breakdown of what the code inside this b
       socket.write(
         `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${message.length}\r\n\r\n${message}`
       );
-    } else if (path.includes("/user-agent") && userAgent) {
+    } else if (path.includes("/user-agent")) {
+      const userAgent = request.split("User-Agent: ")[1].split("\r\n")[0];
+      // console.log("🚀 ~ socket.on ~ userAgent:", userAgent);
       /* The `else if (path.includes("/user-agent") && userAgent)` block in the code snippet is
     checking if the requested path contains "/user-agent" and if the `userAgent` variable has a
     value (meaning it was successfully extracted from the request data). */
