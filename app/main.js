@@ -56,10 +56,10 @@ callback function is executed. Here's a breakdown of what the code inside this b
       );
     } else if (URLpath === "/file") {
       const filePath = path.join(DIRECTORY, URLpath.slice(7));
-      socket.write("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n\r\n");
-      socket.write(fileData);
       try {
         const fileData = await fs.promises.readFile(filePath);
+        socket.write("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n\r\n");
+        socket.write(fileData);
       } catch (error) {
         socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
       }
