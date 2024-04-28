@@ -76,7 +76,7 @@ callback function is executed. Here's a breakdown of what the code inside this b
         const fileData = request.split("\r\n\r\n")[1];
         fs.writeFileSync(filePath, fileData, { encoding: "utf8" });
         socket.write(
-          `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${fileName.length}\r\n\r\n${fileName}`
+          `HTTP/1.1 201 OK\r\nContent-Type: text/plain\r\nContent-Length: ${fileName.length}\r\n\r\n${fileName}`
         );
       }
     } else {
