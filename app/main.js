@@ -26,7 +26,8 @@ callback function is executed. Here's a breakdown of what the code inside this b
     what it does: */
     const request = data.toString(); // Convert the data to a string
     // console.log("🚀 ~ socket.on ~ request:", request);
-    const URLpath = request.split(" ")[1]; // Extract the path from the request
+    const [method, URLpath] = request.split(" "); // Extract the path from the request
+    // console.log("🚀 ~ socket.on ~ method:", method);
     // console.log("🚀 ~ socket.on ~ URLpath:", URLpath)
 
     /* This `if` statement is checking if the requested path is the root path ("/"). If the path is
@@ -54,17 +55,28 @@ callback function is executed. Here's a breakdown of what the code inside this b
         `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`
       );
     } else if (URLpath.includes("/files/")) {
-      const filePath = path.join(DIRECTORY, URLpath.split("/")[2]);
-      console.log("🚀 ~ socket.on ~ filePath:", filePath);
-      try {
-        const fileData = fs.readFileSync(filePath, { encoding: "utf8" });
-        console.log("🚀 ~ socket.on ~ fileData:", fileData);
+      if (method === "GET") {
+        const filePath = path.join(DIRECTORY, URLpath.split("/")[2]);
+        // console.log("🚀 ~ socket.on ~ filePath:", filePath);
+        try {
+          const fileData = fs.readFileSync(filePath, { encoding: "utf8" });
+          // console.log("🚀 ~ socket.on ~ fileData:", fileData);
+          socket.write(
+            `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${fileData.length}\r\n\r\n${fileData}`
+          );
+        } catch (error) {
+          socket.write(
+            "HTTP/1.1 404 Not Found\r\nContent-Type: application/octet-stream\r\nContent-Length: 0\r\n\r\n"
+          );
+        }
+      }
+      if (method === "POST") {
+        const fileName = URLpath.split("/")[2];
+        const filePath = path.join(DIRECTORY, fileName);
+        const fileData = request.split("\r\n\r\n")[1];
+        fs.writeFileSync(filePath, fileData, { encoding: "utf8" });
         socket.write(
-          `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${fileData.length}\r\n\r\n${fileData}`
-        );
-      } catch (error) {
-        socket.write(
-          "HTTP/1.1 404 Not Found\r\nContent-Type: application/octet-stream\r\nContent-Length: 0\r\n\r\n"
+          `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${fileName.length}\r\n\r\n${fileName}`
         );
       }
     } else {
