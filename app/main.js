@@ -63,7 +63,9 @@ callback function is executed. Here's a breakdown of what the code inside this b
           `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${fileData.length}\r\n\r\n${fileData}`
         );
       } catch (error) {
-        socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
+        socket.write(
+          "HTTP/1.1 404 Not Found\r\nContent-Type: application/octet-stream\r\nContent-Length: 0\r\n\r\n"
+        );
       }
     } else {
       /* The `else` block is handling the case where none of the previous conditions in the code snippet are met. 
