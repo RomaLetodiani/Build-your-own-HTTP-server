@@ -10,7 +10,6 @@ let DIRECTORY = __dirname;
 process.argv.forEach((val, index) => {
   if (val === "--directory" && process.argv[index + 1]) {
     DIRECTORY = process.argv[index + 1];
-    1;
   }
 });
 
@@ -58,7 +57,8 @@ callback function is executed. Here's a breakdown of what the code inside this b
       const filePath = path.join(DIRECTORY, URLpath.split("/")[2]);
       console.log("🚀 ~ socket.on ~ filePath:", filePath);
       try {
-        const fileData = fs.readFileSync(filePath);
+        const fileData = fs.readFileSync(filePath, { encoding: "utf8" });
+        console.log("🚀 ~ socket.on ~ fileData:", fileData);
         socket.write(
           `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${fileData.length}\r\n\r\n${fileData}`
         );
