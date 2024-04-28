@@ -1,12 +1,12 @@
-[![progress-banner](https://backend..io/progress/http-server/2856b560-38f7-4338-afad-b0dac7ad7fe9)](https://app..io/users/RomaLetodiani?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/http-server/2856b560-38f7-4338-afad-b0dac7ad7fe9)](https://app..io/users/RomaLetodiani?r=2qF)
 
 # Build Your Own [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) Server
 
-Welcome to the repository containing solutions for the "Build your own [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) server" challenge from codeCrafters, implemented in different programming languages.
+Welcome to the repository containing solutions for the "Build your own [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) server" challenge from [CodeCrafters](https://codecrafters.io/), implemented in different programming languages.
 
 ## Introduction
 
-This repository contains implementations of [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) servers in various programming languages. The goal is to provide solutions for the codeCrafters challenge, showcasing how to build a basic HTTP server from scratch.
+This repository contains implementations of [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) servers in various programming languages. The goal is to provide solutions for the [CodeCrafters](https://codecrafters.io/) challenge, showcasing how to build a basic HTTP server from scratch.
 
 ## Challenge Description
 
@@ -29,11 +29,11 @@ Contributions to this repository are welcome. If you have implemented the HTTP s
 
 ## License
 
-This repository is licensed under the MIT License. See the LICENSE file for details.
+This repository is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ## Acknowledgments
 
-- Thank you to [](https://.io/) for providing the challenge and inspiration for this repository.
-- Special thanks to all contributors who have helped improve this repository with their submissions.
+- Thanks to the [CodeCrafters](https://codecrafters.io/) for providing the challenge and inspiration for this repository.
+- Special thanks to all [Contributors](https://github.com/RomaLetodiani/Build-your-own-HTTP-server/graphs/contributors) who have helped improve this repository with their submissions.
   
-Happy coding!
+# Happy coding!
