@@ -22,7 +22,7 @@ const server = net.createServer({ keepAlive: true }, (socket) => {
   /* The `socket.on("data", (data) => { ... }` block in the code snippet is an event listener in Node.js
 that listens for incoming data on the socket connection. When data is received, the provided
 callback function is executed. Here's a breakdown of what the code inside this block is doing: */
-  socket.on("data", async (data) => {
+  socket.on("data", (data) => {
     /* This block of code is handling the incoming data on the socket connection. Here's a breakdown of
     what it does: */
     const request = data.toString(); // Convert the data to a string
@@ -54,12 +54,13 @@ callback function is executed. Here's a breakdown of what the code inside this b
       socket.write(
         `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`
       );
-    } else if (URLpath === "/file") {
-      const filePath = path.join(DIRECTORY, URLpath.slice(7));
+    } else if (URLpath === "/files/") {
+      const filePath = path.join(DIRECTORY, URLpath.split("/")[2]);
       try {
-        const fileData = await fs.promises.readFile(filePath);
-        socket.write("HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\n\r\n");
-        socket.write(fileData);
+        const fileData = fs.readFileSync(filePath);
+        socket.write(
+          `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${fileData.length}\r\n\r\n${fileData}`
+        );
       } catch (error) {
         socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
       }
