@@ -54,8 +54,9 @@ callback function is executed. Here's a breakdown of what the code inside this b
       socket.write(
         `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`
       );
-    } else if (URLpath === "/files/") {
+    } else if (URLpath.includes("/files/")) {
       const filePath = path.join(DIRECTORY, URLpath.split("/")[2]);
+      console.log("🚀 ~ socket.on ~ filePath:", filePath);
       try {
         const fileData = fs.readFileSync(filePath);
         socket.write(
