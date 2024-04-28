@@ -1,5 +1,6 @@
 [![progress-banner](https://backend.codecrafters.io/progress/http-server/2856b560-38f7-4338-afad-b0dac7ad7fe9)](https://app.codecrafters.io/users/RomaLetodiani?r=2qF)
 
+This is a starting point for JavaScript solution to the
 ["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
 
 Welcome to the journey of mastering [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) with CodeCrafters! 🚀
