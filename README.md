@@ -2,7 +2,7 @@
 
 # Build Your Own [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) Server
 
-Welcome to the repository containing solutions for the "Build your own [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) server" challenge from [CodeCrafters](https://codecrafters.io/), implemented in different programming languages.
+Welcome to the repository containing solutions for the ["Build Your Own HTTP server"](https://app.codecrafters.io/courses/http-server/overview) challenge from [CodeCrafters](https://codecrafters.io/), implemented in different programming languages.
 
 ## Introduction
 
