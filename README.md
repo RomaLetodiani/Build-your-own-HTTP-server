@@ -16,6 +16,9 @@ The [CodeCrafters](https://codecrafters.io/) challenge ["Build Your Own HTTP ser
 
 - [**JavaScript**](/JavaScript)
 - [**TypeScript**](/TypeScript)
+- [**Python**](/Python)
+- [**C#**](/C#)
+- [**C**](/C)
 
 Each directory contains the source code for the HTTP server implemented in the respective programming language.
 
@@ -35,5 +38,5 @@ This repository is licensed under the MIT License. See the [LICENSE](LICENSE) fi
 
 - Thanks to the [CodeCrafters](https://codecrafters.io/) for providing the challenge and inspiration for this repository.
 - Special thanks to all [Contributors](https://github.com/RomaLetodiani/Build-your-own-HTTP-server/graphs/contributors) who have helped improve this repository with their submissions.
-  
+
 # Happy coding!
