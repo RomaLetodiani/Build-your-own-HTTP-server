@@ -30,8 +30,22 @@ while (true){
 }
 
 static string GetResponse(string request){
-    // Implement your logic for handling requests here
+
+    string[] splittedRequest = request.Split(" ");
+    string method = splittedRequest[0];
+    string path = splittedRequest[1];
     string okResponse = "HTTP/1.1 200 OK\r\n\r\n";
-    // string notFoundResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
-    return okResponse;
+    string notFoundResponse = "HTTP/1.1 404 Not Found\r\n\r\n";
+
+    // Respond with a 405 if the method is not "GET"
+    if (method != "GET"){
+        return "HTTP/1.1 405 Method Not Allowed\r\n\r\n";
+    }
+
+    // Respond with a 404 if the path is not "/"
+    if (path == "/"){
+        return okResponse;
+    } else {
+        return notFoundResponse;
+    }
 }
