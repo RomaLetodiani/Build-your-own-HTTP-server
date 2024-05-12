@@ -51,10 +51,18 @@ class HttpServer {
         if (path == "/")
             return CreateResponse(200, "OK", "text/plain", "");
 
+        if (path == "/user-agent") {
+        string? userAgent = lines.FirstOrDefault(static line => line.StartsWith("User-Agent:"));
+        Console.WriteLine("User-Agent: " + userAgent);
+        if (userAgent != null) {
+            userAgent = userAgent["User-Agent:".Length..].Trim();
+            return CreateResponse(200, "OK", "text/plain", userAgent);
+        }
+    }
+
         string[] pathParts = path.Split('/');
         if (pathParts.Length > 2) {
             string subPath = pathParts[2];
-            Console.WriteLine("Sub Path: " + subPath);
             return CreateResponse(200, "OK", "text/plain", subPath);
         }
 
@@ -64,11 +72,13 @@ class HttpServer {
 
     private string CreateResponse(int statusCode, string statusText, string contentType = "text/plain", string content = "") {
         StringBuilder response = new StringBuilder();
-        response.AppendLine($"HTTP/1.1 {statusCode} {statusText}");
-        response.AppendLine($"Content-Type: {contentType}");
-        response.AppendLine($"Content-Length: {content.Length}");
-        response.AppendLine();
-        response.AppendLine(content);
+        response.Append($"HTTP/1.1 {statusCode} {statusText}");
+        response.Append("\r\n");
+        response.Append($"Content-Type: {contentType}");
+        response.Append("\r\n");
+        response.Append($"Content-Length: {content.Length}");
+        response.Append("\r\n\r\n");
+        response.Append(content);
         return response.ToString();
     }
 }
