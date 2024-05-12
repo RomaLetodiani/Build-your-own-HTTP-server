@@ -14,11 +14,12 @@ The [CodeCrafters](https://codecrafters.io/) challenge ["Build Your Own HTTP ser
 
 ## Directory Structure
 
+- [**C**](/C)
+- [**C#**](/C#)
+- [**C++**](/C++)
+- [**Python**](/Python)
 - [**JavaScript**](/JavaScript)
 - [**TypeScript**](/TypeScript)
-- [**Python**](/Python)
-- [**C#**](/C#)
-- [**C**](/C)
 
 Each directory contains the source code for the HTTP server implemented in the respective programming language.
 
