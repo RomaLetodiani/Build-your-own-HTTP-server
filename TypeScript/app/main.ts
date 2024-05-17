@@ -15,49 +15,12 @@ process.argv.forEach((val, index) => {
   }
 });
 
-console.log("🚀 ~ Your Server Started!");
 const server = net.createServer({ keepAlive: true }, (socket) => {
-  socket.on("data", (data) => {
-    const request = data.toString(); // Convert the data to a string
-    const [method, URLpath] = request.split(" "); // Extract the path from the request
-    if (URLpath === "/") {
-      socket.write("HTTP/1.1 200 OK\r\n\r\nHello, World!");
-    } else if (URLpath.startsWith("/echo")) {
-      const message = URLpath.split("/echo/")[1];
-      socket.write(
-        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${message.length}\r\n\r\n${message}`
-      );
-    } else if (URLpath.includes("/user-agent")) {
-      const userAgent = request.split("User-Agent: ")[1].split("\r\n")[0];
-      socket.write(
-        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`
-      );
-    } else if (URLpath.includes("/files/")) {
-      if (method === "GET") {
-        const filePath = path.join(DIRECTORY, URLpath.split("/")[2]);
-        try {
-          const fileData = fs.readFileSync(filePath, { encoding: "utf8" });
-          socket.write(
-            `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${fileData.length}\r\n\r\n${fileData}`
-          );
-        } catch (error) {
-          socket.write(
-            "HTTP/1.1 404 Not Found\r\nContent-Type: application/octet-stream\r\nContent-Length: 0\r\n\r\n"
-          );
-        }
-      }
-      if (method === "POST") {
-        const fileName = URLpath.split("/")[2];
-        const filePath = path.join(DIRECTORY, fileName);
-        const fileData = request.split("\r\n\r\n")[1];
-        fs.writeFileSync(filePath, fileData, { encoding: "utf8" });
-        socket.write(
-          `HTTP/1.1 201 OK\r\nContent-Type: text/plain\r\nContent-Length: ${fileName.length}\r\n\r\n${fileName}`
-        );
-      }
-    } else {
-      socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
-    }
+  console.log("🚀 ~ Your Server Started!");
+  socket.on("data", (data: Buffer) => {
+    const request: string[] = data.toString().split("\r\n");
+    const response: string = handleRequest(request);
+    socket.write(response);
   });
 
   socket.on("close", () => {
@@ -65,5 +28,88 @@ const server = net.createServer({ keepAlive: true }, (socket) => {
     server.close();
   });
 });
+
+const handleRequest = (request: string[]) => {
+  const [method, urlPath] = request[0].split(" ");
+  const pathParts: string[] = urlPath.split("/");
+  const encoding: string | undefined = request.find((header) =>
+    header.startsWith("Accept-Encoding")
+  );
+  const validMethods: string[] = ["GET", "POST"];
+
+  if (!validMethods.includes(method)) {
+    return createResponse(405, "Method Not Allowed");
+  }
+
+  if (urlPath === "/") {
+    return createResponse(200, "OK");
+  }
+
+  if (urlPath.startsWith("/files/") && pathParts.length > 2) {
+    const fileName: string = pathParts[2];
+    const filePath: string = path.join(DIRECTORY, fileName);
+
+    if (method === "GET") {
+      try {
+        const fileContent: string = fs.readFileSync(filePath, { encoding: "utf8" });
+        return createResponse(200, "OK", "application/octet-stream", fileContent);
+      } catch (error) {
+        return createResponse(404, "Not Found");
+      }
+    }
+
+    if (method === "POST") {
+      const fileContent = request[request.length - 1];
+      try {
+        fs.writeFileSync(filePath, fileContent, { encoding: "utf8" });
+        return createResponse(201, "Created", "text/plain", fileContent);
+      } catch (error) {
+        return createResponse(500, "Internal Server Error");
+      }
+    }
+  }
+
+  if (urlPath === "/user-agent") {
+    const userAgent: string | undefined = request
+      .find((header) => header.startsWith("User-Agent"))
+      ?.split(": ")[1];
+    return createResponse(200, "OK", "text/plain", userAgent);
+  }
+
+  if (encoding && pathParts.length === 3 && method === "GET") {
+    const subPath: string = pathParts[2];
+    const encodingTypes: string = encoding.split(": ")[1];
+    return createResponse(
+      200,
+      "OK",
+      "text/plain",
+      subPath,
+      encodingTypes.includes("gzip") ? "gzip" : ""
+    );
+  }
+
+  if (pathParts.length > 2) {
+    const subPath: string = pathParts[2];
+    return createResponse(200, "OK", "text/plain", subPath);
+  }
+
+  return createResponse(404, "Not Found");
+};
+
+const createResponse = (
+  statusCode: number,
+  statusText: string,
+  contentType: string = "text/plain",
+  content: string = "",
+  contentEncoding: string = ""
+) => {
+  const response: string[] = [];
+  response.push(`HTTP/1.1 ${statusCode} ${statusText}`);
+  contentEncoding && response.push(`Content-Encoding: ${contentEncoding}`);
+  response.push(`Content-Type: ${contentType}`);
+  response.push(`Content-Length: ${content.length}\r\n`);
+  response.push(content);
+  return response.join("\r\n");
+};
 
 server.listen(4221, "127.0.0.1");
