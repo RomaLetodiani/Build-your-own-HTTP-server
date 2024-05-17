@@ -15,8 +15,7 @@ const server = net.createServer({ keepAlive: true }, (socket) => {
   console.log("🚀 ~ Your Server Started!");
   socket.on("data", (data) => {
     const request = data.toString().split("\r\n");
-    let response = handleRequest(request);
-
+    const response = handleRequest(request);
     socket.write(response);
   });
 
@@ -27,20 +26,58 @@ const server = net.createServer({ keepAlive: true }, (socket) => {
 });
 
 const handleRequest = (request) => {
-  const [method, path] = request[0].split(" ");
-  const pathParts = path.split("/");
+  const [method, urlPath] = request[0].split(" ");
+  const pathParts = urlPath.split("/");
+  const encoding = request.find((header) => header.startsWith("Accept-Encoding"));
+  const validMethods = ["GET", "POST"];
 
-  if (method !== "GET" && method !== "POST") {
+  if (!validMethods.includes(method)) {
     return createResponse(405, "Method Not Allowed");
   }
 
-  if (path === "/") {
+  if (urlPath === "/") {
     return createResponse(200, "OK");
   }
 
-  if (path === "/user-agent") {
+  if (urlPath.startsWith("/files/") && pathParts.length > 2) {
+    const fileName = pathParts[2];
+    const filePath = path.join(DIRECTORY, fileName);
+
+    if (method === "GET") {
+      try {
+        const fileContent = fs.readFileSync(filePath, { encoding: "utf8" });
+        return createResponse(200, "OK", "application/octet-stream", fileContent);
+      } catch (error) {
+        return createResponse(404, "Not Found");
+      }
+    }
+
+    if (method === "POST") {
+      const fileContent = request[request.length - 1];
+      try {
+        fs.writeFileSync(filePath, fileContent, { encoding: "utf8" });
+        return createResponse(201, "Created", "text/plain", fileContent);
+      } catch (error) {
+        return createResponse(500, "Internal Server Error");
+      }
+    }
+  }
+
+  if (urlPath === "/user-agent") {
     const userAgent = request.find((header) => header.startsWith("User-Agent")).split(": ")[1];
     return createResponse(200, "OK", "text/plain", userAgent);
+  }
+
+  if (encoding && pathParts.length === 3 && method === "GET") {
+    const subPath = pathParts[2];
+    // const encodingTypes = encoding.split(": ")[1];
+    return createResponse(
+      200,
+      "OK",
+      "text/plain",
+      subPath,
+      encoding.includes("gzip") ? "gzip" : ""
+    );
   }
 
   if (pathParts.length > 2) {
@@ -51,9 +88,16 @@ const handleRequest = (request) => {
   return createResponse(404, "Not Found");
 };
 
-const createResponse = (statusCode, statusText, contentType = "text/plain", content = "") => {
+const createResponse = (
+  statusCode,
+  statusText,
+  contentType = "text/plain",
+  content = "",
+  contentEncoding = ""
+) => {
   const response = [];
   response.push(`HTTP/1.1 ${statusCode} ${statusText}`);
+  contentEncoding && response.push(`Content-Encoding: ${contentEncoding}`);
   response.push(`Content-Type: ${contentType}`);
   response.push(`Content-Length: ${content.length}\r\n`);
   response.push(content);
