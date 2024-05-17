@@ -38,6 +38,11 @@ const handleRequest = (request) => {
     return createResponse(200, "OK");
   }
 
+  if (path === "/user-agent") {
+    const userAgent = request.find((header) => header.startsWith("User-Agent")).split(": ")[1];
+    return createResponse(200, "OK", "text/plain", userAgent);
+  }
+
   if (pathParts.length > 2) {
     const subPath = pathParts[2];
     return createResponse(200, "OK", "text/plain", subPath);
