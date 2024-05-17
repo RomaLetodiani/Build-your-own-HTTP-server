@@ -1,5 +1,3 @@
-/* This JavaScript code snippet is creating a simple HTTP server using Node.js's `net` module. Here's a
-breakdown of what the code does: */
 const net = require("net");
 
 const fs = require("fs");
@@ -13,49 +11,13 @@ process.argv.forEach((val, index) => {
   }
 });
 
-console.log("🚀 ~ Your Server Started!");
 const server = net.createServer({ keepAlive: true }, (socket) => {
+  console.log("🚀 ~ Your Server Started!");
   socket.on("data", (data) => {
-    const request = data.toString(); // Convert the data to a string
-    const [method, URLpath] = request.split(" "); // Extract the path from the request
-    if (URLpath === "/") {
-      socket.write("HTTP/1.1 200 OK\r\n\r\nHello, World!");
-    } else if (URLpath.startsWith("/echo")) {
-      const message = URLpath.split("/echo/")[1];
-      socket.write(
-        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${message.length}\r\n\r\n${message}`
-      );
-    } else if (URLpath.includes("/user-agent")) {
-      const userAgent = request.split("User-Agent: ")[1].split("\r\n")[0];
-      socket.write(
-        `HTTP/1.1 200 OK\r\nContent-Type: text/plain\r\nContent-Length: ${userAgent.length}\r\n\r\n${userAgent}`
-      );
-    } else if (URLpath.includes("/files/")) {
-      if (method === "GET") {
-        const filePath = path.join(DIRECTORY, URLpath.split("/")[2]);
-        try {
-          const fileData = fs.readFileSync(filePath, { encoding: "utf8" });
-          socket.write(
-            `HTTP/1.1 200 OK\r\nContent-Type: application/octet-stream\r\nContent-Length: ${fileData.length}\r\n\r\n${fileData}`
-          );
-        } catch (error) {
-          socket.write(
-            "HTTP/1.1 404 Not Found\r\nContent-Type: application/octet-stream\r\nContent-Length: 0\r\n\r\n"
-          );
-        }
-      }
-      if (method === "POST") {
-        const fileName = URLpath.split("/")[2];
-        const filePath = path.join(DIRECTORY, fileName);
-        const fileData = request.split("\r\n\r\n")[1];
-        fs.writeFileSync(filePath, fileData, { encoding: "utf8" });
-        socket.write(
-          `HTTP/1.1 201 OK\r\nContent-Type: text/plain\r\nContent-Length: ${fileName.length}\r\n\r\n${fileName}`
-        );
-      }
-    } else {
-      socket.write("HTTP/1.1 404 Not Found\r\n\r\n");
-    }
+    const request = data.toString().split("\r\n");
+    let response = handleRequest(request);
+
+    socket.write(response);
   });
 
   socket.on("close", () => {
@@ -63,5 +25,34 @@ const server = net.createServer({ keepAlive: true }, (socket) => {
     server.close();
   });
 });
+
+const handleRequest = (request) => {
+  const [method, path] = request[0].split(" ");
+  const pathParts = path.split("/");
+
+  if (method !== "GET" && method !== "POST") {
+    return createResponse(405, "Method Not Allowed");
+  }
+
+  if (path === "/") {
+    return createResponse(200, "OK");
+  }
+
+  if (pathParts.length > 2) {
+    const subPath = pathParts[2];
+    return createResponse(200, "OK", "text/plain", subPath);
+  }
+
+  return createResponse(404, "Not Found");
+};
+
+const createResponse = (statusCode, statusText, contentType = "text/plain", content = "") => {
+  const response = [];
+  response.push(`HTTP/1.1 ${statusCode} ${statusText}`);
+  response.push(`Content-Type: ${contentType}`);
+  response.push(`Content-Length: ${content.length}\r\n`);
+  response.push(content);
+  return response.join("\r\n");
+};
 
 server.listen(4221, "127.0.0.1");
