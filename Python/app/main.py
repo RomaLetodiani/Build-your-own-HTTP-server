@@ -1,16 +1,26 @@
 # Uncomment this to pass the first stage
 import socket
-
+import threading
 
 def main():
     print("🚀 ~ Your Server Started!")
 
     server_socket = socket.create_server(("localhost", 4221), reuse_port=True)
-    client_socket, addr = server_socket.accept() # wait for client
-    print(f"Connection from {addr}")
-    request = client_socket.recv(1024).decode("utf-8") # get data from client
-    response = handleRequest(request) # handle request
-    client_socket.sendall(response) # send data to client
+    while True:
+        client_socket, addr = server_socket.accept() # wait for client
+        print(f"Connection from {addr}")
+
+        # Start a new thread to handle the client
+        threading.Thread(target=handle_client, args=(client_socket,)).start()
+
+def handle_client(client_socket):
+    try:
+        request = client_socket.recv(1024).decode("utf-8")  # get data from client
+        response = handleRequest(request)  # handle request
+        client_socket.sendall(response)  # send data to client
+    finally:
+        client_socket.close()  # Close the client socket when done
+
 
 def handleRequest(request):
     lines = request.split("\r\n")
