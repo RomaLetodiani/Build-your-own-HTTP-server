@@ -15,11 +15,24 @@ def main():
 def handleRequest(request):
     lines = request.split("\r\n")
     method, path, protocol = lines[0].split(" ")
+    pathParts = path.split("/")
+    encoding = next((line for line in lines if "Accept-Encoding:" in line), None)
+
+
     if method not in ["GET", "POST"]:
         return create_response(405, "Method Not Allowed")
     
     if method == "GET" and path == "/":
         return create_response(200)
+    
+    if path == "/user-agent":
+        userAgent = next((line for line in lines if "User-Agent:" in line), None).split("User-Agent: ")[1]
+        return create_response(200, content=userAgent)
+    
+    if len(pathParts) > 2:
+        subPath = pathParts[2]
+        return create_response(200, content=subPath)
+
     return create_response(404, "Not Found")
 
 def create_response(status_code, status_text = "OK", content_type = "text/plain", content = "", content_encoding = ""):
