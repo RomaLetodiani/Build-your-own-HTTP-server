@@ -36,6 +36,15 @@ struct Request parse_request(char *buf, ssize_t len)
 	// Use sscanf to parse the request line
 	sscanf(buf, "%s %s %s", request.method, request.path, request.http_ver);
 
+	// Parse body
+	char *body_start = strstr(buf, "\r\n\r\n");
+	if (body_start != NULL)
+	{
+		body_start += 4; // Move past the empty line
+		request.body = body_start;
+		request.body_len = len - (body_start - buf);
+	}
+
 	// Parse headers
 	char *header_lines[MAX_HEADERS]; // Assuming there can be up to MAX_HEADERS header lines
 	int num_headers = 0;
@@ -190,8 +199,8 @@ int main(int argc, char *argv[])
 
 					fread(file_content, 1, file_size, file);
 					fclose(file);
-
 					send_response(client_socket, 200, "OK", "application/octet-stream", file_content);
+					free(file_content);
 				}
 			}
 			if (strcmp(request.method, "POST") == 0)
@@ -212,37 +221,14 @@ int main(int argc, char *argv[])
 				}
 				else
 				{
-					size_t bytes_written = fwrite(request.body, 1, request.body_len, file);
+					printf("🚀 ~ Writing to file...\n");
+					fwrite(request.body, 1, request.body_len, file);
 					fclose(file);
-					if (bytes_written < request.body_len)
-					{
-						perror("Error writing to file");
-						send_response(client_socket, 500, "Internal Server Error", "text/plain", "");
-					}
-					else
-					{
-						fseek(file, 0, SEEK_END);
-						long file_size = ftell(file);
-						fseek(file, 0, SEEK_SET);
 
-						char *file_content = malloc(file_size);
-						if (file_content == NULL)
-						{
-							perror("Failed to allocate memory");
-							exit(1);
-						}
-
-						fread(file_content, 1, file_size, file);
-						fclose(file);
-
-						send_response(client_socket, 201, "Created", "text/plain", file_content);
-						printf("🚀 ~ File saved\n");
-					}
-					fclose(file);
+					send_response(client_socket, 201, "Created", "text/plain", request.body);
+					printf("🚀 ~ File written\n");
 				}
 			}
-			free(file_content);
-			free(file_path);
 		}
 		else if (numParts > 1)
 		{
