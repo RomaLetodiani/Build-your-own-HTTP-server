@@ -157,8 +157,96 @@ int main(int argc, char *argv[])
 		{
 			send_response(client_socket, 200, "OK", "text/plain", request.user_agent);
 		}
+		else if (strcmp(pathParts[0], "files") == 0 && numParts > 1)
+		{
+			char *file_path = malloc(strlen(directory) + strlen(pathParts[1]) + 1);
+			if (strcmp(request.method, "GET") == 0)
+			{
+				if (file_path == NULL)
+				{
+					perror("Failed to allocate memory");
+					exit(1);
+				}
+				strcpy(file_path, directory);
+				strcat(file_path, pathParts[1]);
+
+				FILE *file = fopen(file_path, "r");
+				if (file == NULL)
+				{
+					send_response(client_socket, 404, "Not Found", "text/plain", "");
+				}
+				else
+				{
+					fseek(file, 0, SEEK_END);
+					long file_size = ftell(file);
+					fseek(file, 0, SEEK_SET);
+
+					char *file_content = malloc(file_size);
+					if (file_content == NULL)
+					{
+						perror("Failed to allocate memory");
+						exit(1);
+					}
+
+					fread(file_content, 1, file_size, file);
+					fclose(file);
+
+					send_response(client_socket, 200, "OK", "application/octet-stream", file_content);
+				}
+			}
+			if (strcmp(request.method, "POST") == 0)
+			{
+				if (file_path == NULL)
+				{
+					perror("Failed to allocate memory");
+					exit(1);
+				}
+				strcpy(file_path, directory);
+				strcat(file_path, pathParts[1]);
+
+				FILE *file = fopen(file_path, "w");
+				if (file == NULL)
+				{
+					perror("Failed to open file for writing");
+					send_response(client_socket, 404, "Not Found", "text/plain", "");
+				}
+				else
+				{
+					size_t bytes_written = fwrite(request.body, 1, request.body_len, file);
+					fclose(file);
+					if (bytes_written < request.body_len)
+					{
+						perror("Error writing to file");
+						send_response(client_socket, 500, "Internal Server Error", "text/plain", "");
+					}
+					else
+					{
+						fseek(file, 0, SEEK_END);
+						long file_size = ftell(file);
+						fseek(file, 0, SEEK_SET);
+
+						char *file_content = malloc(file_size);
+						if (file_content == NULL)
+						{
+							perror("Failed to allocate memory");
+							exit(1);
+						}
+
+						fread(file_content, 1, file_size, file);
+						fclose(file);
+
+						send_response(client_socket, 201, "Created", "text/plain", file_content);
+						printf("🚀 ~ File saved\n");
+					}
+					fclose(file);
+				}
+			}
+			free(file_content);
+			free(file_path);
+		}
 		else if (numParts > 1)
 		{
+			printf("🚀 ~ pathParts[1]: %s\n", pathParts[1]);
 			send_response(client_socket, 200, "OK", "text/plain", pathParts[1]);
 		}
 		else
