@@ -1,4 +1,4 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/c0d0f97e-1d73-495a-8f7c-f70b83ad8d47)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/http-server/c0d0f97e-1d73-495a-8f7c-f70b83ad8d47)](https://app.codecrafters.io/users/RomaLetodiani)
 
 This is a starting point for Python solutions to the
 ["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
