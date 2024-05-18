@@ -1,4 +1,4 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/2856b560-38f7-4338-afad-b0dac7ad7fe9)](https://app.codecrafters.io/users/RomaLetodiani?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/http-server/2856b560-38f7-4338-afad-b0dac7ad7fe9)](https://app.codecrafters.io/users/RomaLetodiani)
 
 This is a starting point for JavaScript solution to the
 ["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
