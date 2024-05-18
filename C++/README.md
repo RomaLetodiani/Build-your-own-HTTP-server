@@ -1,4 +1,4 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/0b75e640-2dc2-4ab1-b2b0-e4e03e048790)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/http-server/0b75e640-2dc2-4ab1-b2b0-e4e03e048790)](https://app.codecrafters.io/users/RomaLetodiani)
 
 This is a starting point for C++ solutions to the
 ["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).

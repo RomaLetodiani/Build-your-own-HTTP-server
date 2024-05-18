@@ -1,4 +1,4 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/2856b560-38f7-4338-afad-b0dac7ad7fe9)](https://app..io/users/RomaLetodiani?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/http-server/2856b560-38f7-4338-afad-b0dac7ad7fe9)](https://app.codecrafters.io/users/RomaLetodiani)
 
 # Build Your Own [HTTP](https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol) Server
 
