@@ -2,6 +2,7 @@
 import socket
 import argparse
 import threading
+import gzip
 
 def main():
     print("🚀 ~ Your Server Started!")
@@ -58,21 +59,35 @@ def handleRequest(request, args):
                 file.write(content)
             return create_response(201, "Created")
 
+    if encoding and len(pathParts) == 3:
+        subPath = pathParts[2]
+        content_encoding = "gzip" if "gzip" in encoding else ""
+        if content_encoding == "gzip":
+            compressed_content = gzip.compress(subPath.encode())
+            final_response = create_response(200, content_encoding=content_encoding, content_length=len(compressed_content)) + compressed_content
+            print(final_response)
+            return final_response
+        else:
+            return create_response(200, content=subPath)
+
     if len(pathParts) > 2:
         subPath = pathParts[2]
         return create_response(200, content=subPath)
 
     return create_response(404, "Not Found")
 
-def create_response(status_code, status_text = "OK", content_type = "text/plain", content = "", content_encoding = ""):
+def create_response(status_code, status_text = "OK", content_type = "text/plain", content = "", content_encoding = "", content_length = 0):
     response = []
     response.append(f"HTTP/1.1 {status_code} {status_text}")
     response.append(f"Content-Type: {content_type}")
     if content_encoding:
         response.append(f"Content-Encoding: {content_encoding}")
-    response.append(f"Content-Length: {len(content)}\r\n")
-    response.append(content)
-    return "\r\n".join(response).encode()
+    if content:
+        response.append(f"Content-Length: {len(content)}\r\n")
+        response.append(content)
+    else:
+        response.append(f"Content-Length: {content_length}\r\n\r\n")
+    return "\r\n".join(response).encode("utf-8")
 
 if __name__ == "__main__":
     while True:
