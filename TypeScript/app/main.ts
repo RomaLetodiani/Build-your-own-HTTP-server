@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import fs from "fs";
 import path from "path";
+import zlib from "zlib";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -19,17 +20,18 @@ const server = net.createServer({ keepAlive: true }, (socket) => {
   console.log("🚀 ~ Your Server Started!");
   socket.on("data", (data: Buffer) => {
     const request: string[] = data.toString().split("\r\n");
-    const response: string = handleRequest(request);
+    const [response, gzip]: [string, Buffer] | [string, null] = handleRequest(request);
     socket.write(response);
+    !!gzip && socket.write(gzip);
   });
 
-  socket.on("close", () => {
-    socket.end();
-    server.close();
-  });
+  // socket.on("close", () => {
+  //   socket.end();
+  //   server.close();
+  // });
 });
 
-const handleRequest = (request: string[]) => {
+const handleRequest = (request: string[]): [string, Buffer] | [string, null] => {
   const [method, urlPath] = request[0].split(" ");
   const pathParts: string[] = urlPath.split("/");
   const encoding: string | undefined = request.find((header) =>
@@ -38,11 +40,11 @@ const handleRequest = (request: string[]) => {
   const validMethods: string[] = ["GET", "POST"];
 
   if (!validMethods.includes(method)) {
-    return createResponse(405, "Method Not Allowed");
+    return [createResponse(405, "Method Not Allowed"), null];
   }
 
   if (urlPath === "/") {
-    return createResponse(200, "OK");
+    return [createResponse(200, "OK"), null];
   }
 
   if (urlPath.startsWith("/files/") && pathParts.length > 2) {
@@ -51,10 +53,10 @@ const handleRequest = (request: string[]) => {
 
     if (method === "GET") {
       try {
-        const fileContent: string = fs.readFileSync(filePath, { encoding: "utf8" });
-        return createResponse(200, "OK", "application/octet-stream", fileContent);
+        const fileContent = fs.readFileSync(filePath, { encoding: "utf8" });
+        return [createResponse(200, "OK", "application/octet-stream", fileContent), null];
       } catch (error) {
-        return createResponse(404, "Not Found");
+        return [createResponse(404, "Not Found", "application/octet-stream"), null];
       }
     }
 
@@ -62,9 +64,9 @@ const handleRequest = (request: string[]) => {
       const fileContent = request[request.length - 1];
       try {
         fs.writeFileSync(filePath, fileContent, { encoding: "utf8" });
-        return createResponse(201, "Created", "text/plain", fileContent);
+        return [createResponse(201, "Created", "text/plain", fileContent), null];
       } catch (error) {
-        return createResponse(500, "Internal Server Error");
+        return [createResponse(500, "Internal Server Error"), null];
       }
     }
   }
@@ -73,27 +75,25 @@ const handleRequest = (request: string[]) => {
     const userAgent: string | undefined = request
       .find((header) => header.startsWith("User-Agent"))
       ?.split(": ")[1];
-    return createResponse(200, "OK", "text/plain", userAgent);
+    return [createResponse(200, "OK", "text/plain", userAgent), null];
   }
 
   if (encoding && pathParts.length === 3 && method === "GET") {
-    const subPath: string = pathParts[2];
-    const encodingTypes: string = encoding.split(": ")[1];
-    return createResponse(
-      200,
-      "OK",
-      "text/plain",
-      subPath,
-      encodingTypes.includes("gzip") ? "gzip" : ""
-    );
+    const subPath = pathParts[2];
+    if (encoding.includes("gzip")) {
+      const gzip = zlib.gzipSync(subPath);
+      return [createResponse(200, "OK", "text/plain", "", "gzip", gzip.length), gzip];
+    } else {
+      return [createResponse(200, "OK", "text/plain", subPath), null];
+    }
   }
 
   if (pathParts.length > 2) {
     const subPath: string = pathParts[2];
-    return createResponse(200, "OK", "text/plain", subPath);
+    return [createResponse(200, "OK", "text/plain", subPath), null];
   }
 
-  return createResponse(404, "Not Found");
+  return [createResponse(404, "Not Found"), null];
 };
 
 const createResponse = (
@@ -101,14 +101,19 @@ const createResponse = (
   statusText: string,
   contentType: string = "text/plain",
   content: string = "",
-  contentEncoding: string = ""
+  contentEncoding: string = "",
+  contentLength: number = 0
 ) => {
   const response: string[] = [];
   response.push(`HTTP/1.1 ${statusCode} ${statusText}`);
   contentEncoding && response.push(`Content-Encoding: ${contentEncoding}`);
   response.push(`Content-Type: ${contentType}`);
-  response.push(`Content-Length: ${content.length}\r\n`);
-  response.push(content);
+  if (contentLength) {
+    response.push(`Content-Length: ${contentLength}\r\n\r\n`);
+  } else {
+    response.push(`Content-Length: ${content.length}\r\n`);
+    response.push(content);
+  }
   return response.join("\r\n");
 };
 
