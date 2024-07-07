@@ -1,4 +1,4 @@
-[![progress-banner](https://backend.codecrafters.io/progress/http-server/4bc2ef20-a7a0-4e5c-a9c1-e2538f164d45)](https://app.codecrafters.io/users/codecrafters-bot?r=2qF)
+[![progress-banner](https://backend.codecrafters.io/progress/http-server/4bc2ef20-a7a0-4e5c-a9c1-e2538f164d45)](https://app.codecrafters.io/users/RomaLetodiani)
 
 This is a starting point for C# solutions to the
 ["Build Your Own HTTP server" Challenge](https://app.codecrafters.io/courses/http-server/overview).
