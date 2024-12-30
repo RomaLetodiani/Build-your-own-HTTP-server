@@ -1,0 +1,8 @@
+[package]
+name = "codecrafters-http-server"
+version = "0.1.0"
+authors = ["Codecrafters <hello@codecrafters.io>"]
+edition = "2021"
+
+[dependencies]
+flate2 = "1.0"
