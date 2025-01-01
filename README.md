@@ -17,6 +17,7 @@ The [CodeCrafters](https://codecrafters.io/) challenge ["Build Your Own HTTP ser
 - [**C**](/C)
 - [**C#**](/C#)
 - [**C++**](/C++)
+- [**Rust**](/Rust)
 - [**Python**](/Python)
 - [**JavaScript**](/JavaScript)
 - [**TypeScript**](/TypeScript)
